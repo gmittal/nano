@@ -1,14 +1,19 @@
-[
-  {
-    "title": "Hello, World",
-    "file": "_posts/hello-world.md",
-    "slug": "hello-world",
-    "date": "June 30, 2016"
+{
+  "details": {
+    "author": "Your Name"
   },
-  {
-    "title": "First Blog Post",
-    "file": "_posts/first-blog.md",
-    "slug": "first-blog-post",
-    "date": "July 1, 2016"
-  }
-]
+  "posts": [
+    {
+      "title": "Hello, World",
+      "file": "_posts/hello-world.md",
+      "slug": "hello-world",
+      "date": "June 30, 2016"
+    },
+    {
+      "title": "First Blog Post",
+      "file": "_posts/first-blog.md",
+      "slug": "first-blog-post",
+      "date": "July 1, 2016"
+    }
+  ]
+}

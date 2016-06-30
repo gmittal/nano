@@ -24,6 +24,15 @@ app.use("/article/doc", express.static(__dirname+'/client/doc'));
 app.use(bodyParser.json({extended:true}));
 app.use(bodyParser.urlencoded({extended:true}));
 
+marked.setOptions({
+  gfm: true,
+  highlight: function (code, lang, callback) {
+    require('pygmentize-bundled')({ lang: lang, format: 'html' }, code, function (err, result) {
+      callback(err, result.toString());
+    });
+  }
+});
+
 function randNumericKey() {
   var n = new Date().getUTCMilliseconds()*Math.random()*Math.random()*Math.random();
   return n;
@@ -32,7 +41,7 @@ function randNumericKey() {
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   fs.readFile(__dirname + "/blog.json", 'utf-8', function (e, f) {
-    var blogJSON = JSON.parse(f);
+    var b = JSON.parse(f);
     // retrieve the template
     fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
       if (err) {
@@ -41,6 +50,7 @@ app.get('/', function (req, res) {
       } else {
         // populate template with data
         var htmlData = [];
+        var blogJSON = b.posts;
         for (var i = 0; i < blogJSON.length; i++) {
           htmlData.unshift('<div class="story"><a href="/'+blogJSON[i].slug+'">'+blogJSON[i].title+'</a><span class="date">'+blogJSON[i].date+'</span><span class="description"></span></div>')
         }
@@ -65,17 +75,17 @@ app.get('/:uid', function (req, res) {
       fs.readFile(__dirname+"/blog.json", 'utf-8', function (e, f) {
         var ix = 0;
         var md = "";
-        for (var i = 0; i < JSON.parse(f).length; i++) {
-            if (JSON.parse(f)[i].slug == req.params.uid) {
+        for (var i = 0; i < JSON.parse(f).posts.length; i++) {
+            if (JSON.parse(f).posts[i].slug == req.params.uid) {
               ix = i;
-              md = JSON.parse(f)[i]["file"];
+              md = JSON.parse(f).posts[i]["file"];
               break;
             }
         }
 
         fs.readFile(__dirname + "/" + md, 'utf-8', function (error, markdown) {
-          var title = JSON.parse(f)[ix]["title"];//JSON.parse(f)["title"];
-          var date = JSON.parse(f)[ix]["date"];//JSON.parse(f)["date"]; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+          var title = JSON.parse(f).posts[ix]["title"];//JSON.parse(f)["title"];
+          var date = JSON.parse(f).posts[ix]["date"];//JSON.parse(f)["date"]; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
           var content = marked(markdown);
           console.log(content);
           fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
