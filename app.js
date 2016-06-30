@@ -1,6 +1,6 @@
 var dotenv = require('dotenv');
 dotenv.load();
-var port = 3000;
+var port = 3001;
 
 var colors = require('colors');
 var compression = require('compression');
@@ -8,7 +8,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var request = require('request');
-var unfluff = require('unfluff');
 var app = express();
 
 app.use(compression());
@@ -31,71 +30,44 @@ function randNumericKey() {
 
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
+  fs.readFile(__dirname + "/blog.json", 'utf-8', function (e, f) {
+    var blogJSON = JSON.parse(f);
+    // retrieve the template
+    fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
+      if (err) {
+        console.log("There was an error serving the article template file.".red);
+        res.send("An error occurred.");
+      } else {
+        // populate template with data
+        var htmlData = [];
+        for (var i = 0; i < blogJSON.length; i++) {
+          htmlData.unshift('<div class="story"><a href="/'+blogJSON[i].slug+'">'+blogJSON[i].title+'</a><span class="date">'+blogJSON[i].date+'</span><span class="description"></span></div>')
+        }
 
-  // retrieve the template
-  fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
-    if (err) {
-      console.log("There was an error serving the article template file.".red);
-      res.send("An error occurred.");
-    } else {
-      // populate template with data
-      var articles = [{"url": "Hello", "title": "Hello, World", "created": "Today", "domain": "Me"}];
-      var htmlData = [];
-      for (var i = 0; i < articles.length; i++) {
-        htmlData.push('<div class="story"><a href="'+articles[i].url+'">'+articles[i].title+'</a><span class="date">'+articles[i].created+' ('+ articles[i].domain +')</span><span class="description"></span></div>')
+        fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
+        res.send(fileData);
       }
-
-
-      fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
-      res.send(fileData);
-    }
+    });
   });
+
 
 });
 
 // Read articles from other publishers "hosted" on the news site
-app.get('/article/:uid', function (req, res) {
+app.get('/:uid', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   fs.readFile(__dirname+"/client/article.html", 'utf-8', function (err, fileData) {
 		if (err) {
       console.log("There was an error serving the article template file.".red);
 			res.send("An error occurred.");
 		} else {
-      // grab the article data using some API
-      // The first time someone accesses an article, the content gets scraped and saved to the firebase.
-      // This allows future requests to the same article to be much faster.
-      db.child(req.params.uid).once('value', function(s) {
-        var url = s.val();
-        if (typeof url == "string") {
-            request({ uri: url , headers: { "User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410."}}, function (error, response, body) {
-              if (!error && response.statusCode == 200) {
-                articleData = unfluff.lazy(body, 'en');
-
-                var title = articleData.title();
-                // var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                // var d = new Date(articleData.published);
-                var date = articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
-                var content = '<img src="'+articleData.image()+'" /><br /><br />'+articleData.text()+'<br /><br /><a href="'+url+'" style="margin-left:0px;">Read Original Article</a><br />';
-
-                db.child(req.params.uid).set({"title": title, "date": date, "body": content}); // cache it for later
-
-                fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
-                fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
-                fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
-                res.send(fileData);
-              }
-            });
-        } else { // nasty looking code
-          var title = url !== null ? url.title : "Unavailable content"; // placeholder since the Firebase sometimes scrapes missing info
-          var date = url !== null ? url.date : "Today";
-          var content = url !== null ? url.body : "Content is unavailable.";
+          var title = "Yo";
+          var date = "YO"; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+          var content = 'Hello world';
           fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
           fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
           fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
           res.send(fileData);
-        }
-      });
-
     }
   });
 });
@@ -121,30 +93,6 @@ app.post('/makeArticle', function (req, res) {
       };
       db.child(uid).set(j);
       res.send(uid);
-  });
-});
-
-app.get('/api/getArticles', function (req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  request('https://www.reddit.com/r/indianews/.json', function (e, r, b) {
-    if (!e && r.statusCode == 200) {
-      var articles = []
-      var d = JSON.parse(b);
-      for (var i = 0; i < d.data.children.length; i++) {
-        if ((d.data.children[i].data.url).indexOf("reddit") == -1) {
-          var uid = randNumericKey().toString().replace(".", "");
-          request.post({url:'http://localhost:3000/registerArticle', form: {"url":d.data.children[i].data.url, "uid": uid}});
-          var j = {};
-          j["/article/"+uid] = d.data.children[i].data.url;
-          articles.push(j);
-        }
-      }
-
-      res.send(articles);
-
-    } else {
-      res.send({"Error": "Failed to retrieve articles."});
-    }
   });
 });
 
