@@ -31,58 +31,26 @@ function randNumericKey() {
 
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
-  db.once("value", function (snapshot) {
-      var curDBJSON = snapshot.val();
-      request('https://www.reddit.com/r/indianews/.json', function (e, r, b) {
-        if (!e && r.statusCode == 200) {
-          var articles = []
-          var d = JSON.parse(b);
-          for (var i = 0; i < d.data.children.length; i++) {
-            if ((d.data.children[i].data.url).indexOf("reddit") == -1) {
-              var uid = randNumericKey().toString().replace(".", "");
-              for (var articleKey in curDBJSON) {
-                if (d.data.children[i].data.url == curDBJSON[articleKey]) {
-                  uid = articleKey
-                }
-              }
 
-              request.post({url:'http://localhost:3000/registerArticle', form: {"url":d.data.children[i].data.url, "uid": uid}});
-              var j = {};
-              var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-              var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-              var date = new Date(parseInt(d.data.children[i].data.created, 10)*1000);
-              j["url"] ="/article/"+uid;
-              j["origin"] = d.data.children[i].data.url;
-              j["title"] = d.data.children[i].data.title;
-              j["created"] = days[date.getDay()] + ", " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-              j["domain"] = d.data.children[i].data.domain;
-              articles.push(j);
-            }
-          }
-
-          // retrieve the template
-          fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
-            if (err) {
-              console.log("There was an error serving the article template file.".red);
-              res.send("An error occurred.");
-            } else {
-              // populate template with data
-              var htmlData = [];
-              for (var i = 0; i < articles.length; i++) {
-                htmlData.push('<div class="story"><a href="'+articles[i].url+'">'+articles[i].title+'</a><span class="date">'+articles[i].created+' ('+ articles[i].domain +')</span><span class="description"></span></div>')
-              }
+  // retrieve the template
+  fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
+    if (err) {
+      console.log("There was an error serving the article template file.".red);
+      res.send("An error occurred.");
+    } else {
+      // populate template with data
+      var articles = [{"url": "Hello", "title": "Hello, World", "created": "Today", "domain": "Me"}];
+      var htmlData = [];
+      for (var i = 0; i < articles.length; i++) {
+        htmlData.push('<div class="story"><a href="'+articles[i].url+'">'+articles[i].title+'</a><span class="date">'+articles[i].created+' ('+ articles[i].domain +')</span><span class="description"></span></div>')
+      }
 
 
-              fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
-              res.send(fileData);
-            }
-          });
+      fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
+      res.send(fileData);
+    }
+  });
 
-        } else {
-          res.send({"Error": "Failed to retrieve articles."});
-        }
-      });
-    }); // end db query
 });
 
 // Read articles from other publishers "hosted" on the news site

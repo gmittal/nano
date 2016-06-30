@@ -16,10 +16,14 @@ html {
     line-height: 1.4;
 }
 
+@font-face {
+  src:url("../img/Circular-Book.ttf");
+  font-family: 'Circular'; font-weight: 400;
+}
 
 @font-face {
-  src: url('../img/EnglishTowne.ttf');
-  font-family: 'English Old';
+  src:url("../img/Circular-Bold.ttf");
+  font-family: 'Circular'; font-weight: 700;
 }
 
 @font-face {
@@ -51,30 +55,6 @@ src:url(data:font/opentype;base64,d09GMgABAAAAADbwABIAAAAAjNQAADaCAAEAAAAAAAAAAA
 font-style:normal;font-weight:700;
 }
 
-@font-face {
-  font-family: "Cheltenham";
-  src: url("../img/Cheltenham-Italic.ttf");
-  font-style:italic;
-}
-
-@font-face {
-  font-family: "Cheltenham";
-  src: url("../img/Cheltenham-Normal.ttf");
-  font-style:normal;
-}
-
-@font-face {
-  font-family: "Adobe Caslon";
-  src: url("../img/AdobeCaslon-Regular.ttf");
-  font-style:normal; font-weight:400;
-}
-
-@font-face {
-  font-family: "Adobe Caslon";
-  src: url("../img/AdobeCaslon-Bold.ttf");
-  font-style:bold; font-weight:700;
-}
-
 footer {
   font-family: "Adobe Caslon";
   font-size: 14pt;
@@ -96,7 +76,7 @@ a:hover {
 }
 
 #mainTitle {
-  font-family: "English Old";
+  font-family: "Open Sans";
   text-align:center;
   font-size: 45pt;
   margin-top: 0px;
