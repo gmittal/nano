@@ -7,6 +7,7 @@ var compression = require('compression');
 var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var marked = require('marked');
 var request = require('request');
 var app = express();
 
@@ -61,13 +62,29 @@ app.get('/:uid', function (req, res) {
       console.log("There was an error serving the article template file.".red);
 			res.send("An error occurred.");
 		} else {
-          var title = "Yo";
-          var date = "YO"; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
-          var content = 'Hello world';
+      fs.readFile(__dirname+"/blog.json", 'utf-8', function (e, f) {
+        var ix = 0;
+        var md = "";
+        for (var i = 0; i < JSON.parse(f).length; i++) {
+            if (JSON.parse(f)[i].slug == req.params.uid) {
+              ix = i;
+              md = JSON.parse(f)[i]["file"];
+              break;
+            }
+        }
+
+        fs.readFile(__dirname + "/" + md, 'utf-8', function (error, markdown) {
+          var title = JSON.parse(f)[ix]["title"];//JSON.parse(f)["title"];
+          var date = JSON.parse(f)[ix]["date"];//JSON.parse(f)["date"]; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+          var content = marked(markdown);
+          console.log(content);
           fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
           fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
           fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
           res.send(fileData);
+        });
+
+      });
     }
   });
 });

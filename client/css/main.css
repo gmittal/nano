@@ -192,9 +192,21 @@ input:focus {
 }
 
 .articleBody {
-  font-size: 13pt;
-  font-family: "leitura-news", "Adobe Caslon", serif;
+  font-size: 12pt;
+  font-family: "Circular", "leitura-news", "Adobe Caslon", sans-serif;
   line-height: 180%;
+}
+
+.articleBody a {
+  font-weight:normal;
+  margin:0;
+  color: #3498db;
+}
+
+.articleBody h2, h3, h4 {
+  line-height: 110%;
+  margin-bottom:-10px;
+  padding:0;
 }
 
 #headline {
