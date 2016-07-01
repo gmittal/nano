@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 marked.setOptions({
   gfm: true,
+  tables: true,
   highlight: function (code, lang, callback) {
     require('pygmentize-bundled')({ lang: lang, format: 'html' }, code, function (err, result) {
       callback(err, result.toString());
@@ -84,14 +85,16 @@ app.get('/:uid', function (req, res) {
         }
 
         fs.readFile(__dirname + "/" + md, 'utf-8', function (error, markdown) {
-          var title = JSON.parse(f).posts[ix]["title"];//JSON.parse(f)["title"];
-          var date = JSON.parse(f).posts[ix]["date"];//JSON.parse(f)["date"]; //articleData.date() + " published by " + articleData.publisher(); //months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
-          var content = marked(markdown);
-          console.log(content);
-          fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
-          fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
-          fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
-          res.send(fileData);
+          marked(markdown, function (err, content) {
+            if (err) throw err;
+            var title = JSON.parse(f).posts[ix]["title"];
+            var date = 'By <a href="/">'+JSON.parse(f).details.author + '</a> &#183 ' + JSON.parse(f).posts[ix]["date"];
+            fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
+            fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
+            fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
+            res.send(fileData);
+          });
+
         });
 
       });
@@ -99,29 +102,6 @@ app.get('/:uid', function (req, res) {
   });
 });
 
-
-app.post('/registerArticle', function (req, res) {
-  var uid = req.body.uid;
-  db.child(uid).set(req.body.url);
-  res.send(uid);
-});
-
-app.post('/makeArticle', function (req, res) {
-  var uid = req.body.uid;
-  request(req.body.url, function(er, re, bd) {
-      var articleData = unfluff.lazy(bd, "en");
-      var j = {
-        "url": "/article/"+uid,
-        "image": articleData.image(),
-        "date": articleData.date(),
-        "title": articleData.title(),
-        "description": typeof articleData.description() !== "undefined" ? articleData.description() : articleData.text().substring(0, 139),
-        "body": articleData.text()
-      };
-      db.child(uid).set(j);
-      res.send(uid);
-  });
-});
 
 app.listen(port, function () {
   console.log('News server successfully running on localhost:3000'.blue);
