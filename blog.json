@@ -1,6 +1,6 @@
 {
   "details": {
-    "author": "Your Name"
+    "author": "Gautam Mittal"
   },
   "posts": [
     {
@@ -14,6 +14,24 @@
       "file": "_posts/first-blog.md",
       "slug": "first-blog-post",
       "date": "July 1, 2016"
+    },
+    {
+      "title": "The Simplest Blog in the World",
+      "file": "_posts/simplest-blogs-forever.md",
+      "slug": "simple-blogs-forever",
+      "date": "July 2, 2016"
+    },
+    {
+      "title": "Music Revolves Around Jazzy Vibes",
+      "file": "_posts/jazz.md",
+      "slug": "jazzy-vibes",
+      "date": "July 4, 2016"
+    },
+    {
+      "title": "Coding McCodeface Lives Again",
+      "file": "_posts/codymccodeface.md",
+      "slug": "coding-prospers-again",
+      "date": "July 9, 2016"
     }
   ]
 }

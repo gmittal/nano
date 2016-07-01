@@ -55,7 +55,8 @@ app.get('/', function (req, res) {
         for (var i = 0; i < blogJSON.length; i++) {
           htmlData.unshift('<div class="story"><a href="/'+blogJSON[i].slug+'">'+blogJSON[i].title+'</a><span class="date">'+blogJSON[i].date+'</span><span class="description"></span></div>')
         }
-
+        var name = b.details.author;
+        fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
         fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
         res.send(fileData);
       }
@@ -89,6 +90,8 @@ app.get('/:uid', function (req, res) {
             if (err) throw err;
             var title = JSON.parse(f).posts[ix]["title"];
             var date = 'By <a href="/">'+JSON.parse(f).details.author + '</a> &#183 ' + JSON.parse(f).posts[ix]["date"];
+            var name = JSON.parse(f).details.author;
+            fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
             fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
             fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
             fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
