@@ -1,3 +1,13 @@
+---START_METADATA---
+{
+  "author": "Marked Author",
+  "summary": "Simple blogs are often the best.",
+  "tags":[
+    "me",
+    "life"
+  ]
+}
+---END_METADATA---
 Hello World!.
 
 ```js

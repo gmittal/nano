@@ -1,3 +1,13 @@
+---START_METADATA---
+{
+  "author": "Feross Aboukhadijeh",
+  "summary": "Simple blogs are often the best.",
+  "tags":[
+    "me",
+    "life"
+  ]
+}
+---END_METADATA---
 Hi, I'm Feross and I'm running for the [Node Foundation Board of Directors](https://nodejs.org/en/blog/community/individual-membership/).
 
 Why I'm a good fit:

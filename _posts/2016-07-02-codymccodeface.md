@@ -1,3 +1,14 @@
+---START_METADATA---
+{
+  "title": "Notes on Binary Strings"
+  "author": "Kartik Chandra",
+  "summary": "Simple blogs are often the best.",
+  "tags":[
+    "me",
+    "life"
+  ]
+}
+---END_METADATA---
 One of the things I had to do for PicoCTF was learn how to wrangle binary
 strings in various languages. The idea is that you think of a string as an
 array of numbers instead of an array of characters. It's only coincidental that
