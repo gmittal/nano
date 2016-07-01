@@ -88,8 +88,11 @@ app.get('/:uid', function (req, res) {
         fs.readFile(__dirname + "/" + md, 'utf-8', function (error, markdown) {
           marked(markdown, function (err, content) {
             if (err) throw err;
+            var wordCount = content.split(" ").length;
+            var timeToRead = Math.ceil(wordCount / 200);
+
             var title = JSON.parse(f).posts[ix]["title"];
-            var date = 'By <a href="/">'+JSON.parse(f).details.author + '</a> &#183 ' + JSON.parse(f).posts[ix]["date"];
+            var date = 'By <a href="/">'+JSON.parse(f).details.author + '</a> &#183; ' + JSON.parse(f).posts[ix]["date"] + ' &#183; ' + timeToRead + " min read";
             var name = JSON.parse(f).details.author;
             fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
             fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
