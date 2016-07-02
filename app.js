@@ -64,6 +64,7 @@ var walk = function(dir, done) {
 function refJSON() {
     walk(__dirname+"/_posts", function (e, r) {
       var j = {};
+      r.splice(r.length-1, 1); // remove 404.md (hope that know one will be still using this in the year 4000)
       for (var i = 0; i < r.length; i++) {
         var d = fs.readFileSync(r[i], "utf-8");
         var metaDataStart = d.indexOf("---START_METADATA---");
@@ -71,14 +72,12 @@ function refJSON() {
         var jstart = d.substr(metaDataStart, metaDataEnd).indexOf("{");
         var metadataStr = d.substr(jstart, metaDataEnd-jstart);
         var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
-        j[r[i].split("/")[r[i].split("/").length-1].substr(11, r[i].length-14)] = metadata.title;
+        j[r[i].split("/")[r[i].split("/").length-1].substr(11, r[i].length-14)] = {"title": metadata.title, "summary": metadata.summary};
       }
 
       fs.writeFile(__dirname + "/ref.json", JSON.stringify(j));
     });
 }
-
-refJSON();
 
 watch(__dirname + "/_posts", function (filename) {
   fs.readFile(__dirname+"/ref.json", 'utf-8', function (e, d) {
@@ -89,22 +88,32 @@ watch(__dirname + "/_posts", function (filename) {
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   walk(__dirname + "/_posts", function (e, r) {
+    r.splice(r.length-1, 1); // remove 404.md
+    console.log(r);
     // retrieve the template
     fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
       if (err) {
         console.log("There was an error serving the article template file.".red);
         res.send("An error occurred.");
       } else {
-        // populate template with data
-        var htmlData = [];
-        var blogJSON = b.posts;
-        for (var i = 0; i < blogJSON.length; i++) {
-          htmlData.unshift('<div class="story"><a href="/'+blogJSON[i].slug+'">'+blogJSON[i].title+'</a><span class="date">'+blogJSON[i].date+'</span><span class="description"></span></div>')
-        }
-        var name = b.details.author;
-        fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
-        fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
-        res.send(fileData);
+        fs.readFile(__dirname+"/ref.json", "utf-8", function (error, ref) {
+          ref = JSON.parse(ref);
+
+          // populate template with data
+          var htmlData = [];
+          for (var j = 0; j < r.length; j++) {
+            r[j] = r[j].split("/")[r[j].split("/").length-1];
+            var slug = r[j].substr(11, r[j].length-14);
+            var time = moment(r[j].substr(0, 10), ["YYYY-MM-DD"]).format("LL");
+            var k = slug + ".md";
+            htmlData.unshift('<div class="story"><a href="/'+slug+'">'+ref[k].title+'</a><span class="date">'+time+'</span><span class="description"></span></div>');
+          }
+
+          var name = "Blog Name";
+          fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
+          fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
+          res.send(fileData);
+        });
       }
     });
   });
@@ -143,7 +152,6 @@ app.get('/:uid', function (req, res) {
 
             var wordCount = content.split(" ").length;
             var timeToRead = Math.ceil(wordCount / 200);
-
             var title = metadata.title;
             var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
             var name = "Blog Name";
@@ -164,5 +172,6 @@ app.get('/:uid', function (req, res) {
 
 
 app.listen(port, function () {
-  console.log('News server successfully running on localhost:3000'.blue);
+  refJSON();
+  console.log(('Blog server running at localhost:'+port).blue);
 });
