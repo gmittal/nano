@@ -10,7 +10,6 @@ var fs = require('fs');
 var marked = require('marked');
 var moment = require('moment');
 var request = require('request');
-var watch = require('node-watch');
 var app = express();
 
 app.use(compression());
@@ -79,17 +78,10 @@ function refJSON() {
     });
 }
 
-watch(__dirname + "/_posts", function (filename) {
-  fs.readFile(__dirname+"/ref.json", 'utf-8', function (e, d) {
-    refJSON();
-  });
-});
-
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   walk(__dirname + "/_posts", function (e, r) {
     r.splice(r.length-1, 1); // remove 404.md
-    console.log(r);
     // retrieve the template
     fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
       if (err) {
