@@ -130,30 +130,29 @@ app.get('/:uid', function (req, res) {
           }
         }
         var md = ix !== -1 ? results[ix] : "404.md";
-        var time = moment(md.substr(0, 10), ["YYYY-MM-DD"]).format("LL");
+        var time = md !== "404.md" ? moment(md.substr(0, 10), ["YYYY-MM-DD"]).format("LL") : "Invalid Page";
 
         fs.readFile(__dirname + "/_posts/" + md, 'utf-8', function (error, markdown) {
-          var metaDataStart = markdown.indexOf("---START_METADATA---");
-          var metaDataEnd = markdown.indexOf("---END_METADATA---");
-          var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
-          var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
-          var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
-          markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
-          marked(markdown, function (err, content) {
-            if (err) throw err;
+            var metaDataStart = markdown.indexOf("---START_METADATA---");
+            var metaDataEnd = markdown.indexOf("---END_METADATA---");
+            var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
+            var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
+            var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
+            markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
+            marked(markdown, function (err, content) {
+              if (err) throw err;
 
-            var wordCount = content.split(" ").length;
-            var timeToRead = Math.ceil(wordCount / 200);
-            var title = metadata.title;
-            var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
-            var name = "Blog Name";
-            fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
-            fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
-            fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
-            fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
-            res.send(fileData);
-          });
-
+              var wordCount = content.split(" ").length;
+              var timeToRead = Math.ceil(wordCount / 200);
+              var title = metadata.title;
+              var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
+              var name = "Blog Name";
+              fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
+              fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
+              fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
+              fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
+              res.send(fileData);
+            });
         });
 
       });
