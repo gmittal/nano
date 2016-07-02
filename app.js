@@ -8,7 +8,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var marked = require('marked');
+var moment = require('moment');
 var request = require('request');
+var watch = require('node-watch');
 var app = express();
 
 app.use(compression());
@@ -17,10 +19,6 @@ app.use("/css", express.static(__dirname+'/client/css'));
 app.use("/img", express.static(__dirname+'/client/img'));
 app.use("/js", express.static(__dirname+'/client/js'));
 app.use("/doc", express.static(__dirname+'/client/doc'));
-app.use("/article/css", express.static(__dirname+'/client/css'));
-app.use("/article/img", express.static(__dirname+'/client/img'));
-app.use("/article/js", express.static(__dirname+'/client/js'));
-app.use("/article/doc", express.static(__dirname+'/client/doc'));
 app.use(bodyParser.json({extended:true}));
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -63,11 +61,34 @@ var walk = function(dir, done) {
   });
 };
 
+function refJSON() {
+    walk(__dirname+"/_posts", function (e, r) {
+      var j = {};
+      for (var i = 0; i < r.length; i++) {
+        var d = fs.readFileSync(r[i], "utf-8");
+        var metaDataStart = d.indexOf("---START_METADATA---");
+        var metaDataEnd = d.indexOf("---END_METADATA---");
+        var jstart = d.substr(metaDataStart, metaDataEnd).indexOf("{");
+        var metadataStr = d.substr(jstart, metaDataEnd-jstart);
+        var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
+        j[r[i].split("/")[r[i].split("/").length-1].substr(11, r[i].length-14)] = metadata.title;
+      }
+
+      fs.writeFile(__dirname + "/ref.json", JSON.stringify(j));
+    });
+}
+
+refJSON();
+
+watch(__dirname + "/_posts", function (filename) {
+  fs.readFile(__dirname+"/ref.json", 'utf-8', function (e, d) {
+    refJSON();
+  });
+});
 
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
-  fs.readFile(__dirname + "/blog.json", 'utf-8', function (e, f) {
-    var b = JSON.parse(f);
+  walk(__dirname + "/_posts", function (e, r) {
     // retrieve the template
     fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
       if (err) {
@@ -87,8 +108,6 @@ app.get('/', function (req, res) {
       }
     });
   });
-
-
 });
 
 // Read articles from other publishers "hosted" on the news site
@@ -110,46 +129,35 @@ app.get('/:uid', function (req, res) {
           }
         }
         var md = ix !== -1 ? results[ix] : "404.md";
-        console.log(md);
+        var time = moment(md.substr(0, 10), ["YYYY-MM-DD"]).format("LL");
+
+        fs.readFile(__dirname + "/_posts/" + md, 'utf-8', function (error, markdown) {
+          var metaDataStart = markdown.indexOf("---START_METADATA---");
+          var metaDataEnd = markdown.indexOf("---END_METADATA---");
+          var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
+          var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
+          var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
+          markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
+          marked(markdown, function (err, content) {
+            if (err) throw err;
+
+            var wordCount = content.split(" ").length;
+            var timeToRead = Math.ceil(wordCount / 200);
+
+            var title = metadata.title;
+            var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
+            var name = "Blog Name";
+            fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
+            fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
+            fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
+            fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
+            res.send(fileData);
+          });
+
+        });
 
       });
-      // fs.readFile(__dirname+"/blog.json", 'utf-8', function (e, f) {
-      //   var ix = 0;
-      //   var md = "";
-      //   for (var i = 0; i < JSON.parse(f).posts.length; i++) {
-      //       if (JSON.parse(f).posts[i].slug == req.params.uid) {
-      //         ix = i;
-      //         md = JSON.parse(f).posts[i]["file"];
-      //         break;
-      //       }
-      //   }
-      //
-      //   fs.readFile(__dirname + "/" + md, 'utf-8', function (error, markdown) {
-      //     var metaDataStart = markdown.indexOf("---START_METADATA---");
-      //     var metaDataEnd = markdown.indexOf("---END_METADATA---");
-      //     var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
-      //     var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
-      //     var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
-      //     markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
-      //     marked(markdown, function (err, content) {
-      //       if (err) throw err;
-      //
-      //       var wordCount = content.split(" ").length;
-      //       var timeToRead = Math.ceil(wordCount / 200);
-      //
-      //       var title = JSON.parse(f).posts[ix]["title"];
-      //       var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + JSON.parse(f).posts[ix]["date"] + ' &#183; ' + timeToRead + " min read";
-      //       var name = JSON.parse(f).details.author;
-      //       fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
-      //       fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
-      //       fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
-      //       fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
-      //       res.send(fileData);
-      //     });
-      //
-      //   });
-      //
-      // });
+
     }
   });
 });

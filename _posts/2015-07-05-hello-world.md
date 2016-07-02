@@ -1,5 +1,6 @@
 ---START_METADATA---
 {
+  "title": "I'm running for the Node.js Board of Directors",
   "author": "Feross Aboukhadijeh",
   "summary": "Simple blogs are often the best.",
   "tags":[

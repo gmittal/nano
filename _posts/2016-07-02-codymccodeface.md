@@ -1,6 +1,6 @@
 ---START_METADATA---
 {
-  "title": "Notes on Binary Strings"
+  "title": "Notes on Binary Strings",
   "author": "Kartik Chandra",
   "summary": "Simple blogs are often the best.",
   "tags":[

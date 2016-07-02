@@ -1,5 +1,6 @@
 ---START_METADATA---
 {
+  "title": "Don't Be This Guy",
   "author": "Marked Author",
   "summary": "Simple blogs are often the best.",
   "tags":[
