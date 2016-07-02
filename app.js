@@ -106,7 +106,7 @@ app.get('/', function (req, res) {
             var slug = r[j].substr(11, r[j].length-14);
             var time = moment(r[j].substr(0, 10), ["YYYY-MM-DD"]).format("LL");
             var k = slug + ".md";
-            htmlData.unshift('<div class="story"><a href="/'+slug+'">'+ref[k].title+'</a><span class="date">'+time+'</span><span class="description"></span></div>');
+            htmlData.unshift('<div class="story"><a href="/'+slug+'">'+ref[k].title+'</a><span class="date">'+time+'</span><span class="description">'+ref[k].summary+'</span></div>');
           }
 
           var name = "Blog Name";
