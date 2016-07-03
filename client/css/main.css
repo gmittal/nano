@@ -96,7 +96,7 @@ a:hover {
 }
 
 #mainTitle {
-  font-family: "Open Sans";
+  font-family: "Proxima Nova";
   font-weight: 100;
   text-align:center;
   font-size: 35pt;
@@ -208,7 +208,7 @@ input:focus {
 .description {
   margin-left: 10px;
   margin-right: 10px;
-  font-family: """leitura-news", "Adobe Caslon", sans-serif;
+  font-family: "leitura-news", "Adobe Caslon", sans-serif;
   font-weight: 300;
   display:block;
   text-align:justify;
@@ -217,7 +217,7 @@ input:focus {
 .articleBody {
   font-size: 13pt;
   font-family: "Circular", "Proxima Nova", "leitura-news", "Adobe Caslon", sans-serif;
-  line-height: 140%;
+  line-height: 160%;
 }
 
 .articleBody a {
