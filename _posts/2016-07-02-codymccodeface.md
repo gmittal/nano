@@ -41,6 +41,8 @@ You can use hexadecimal literals in Python strings with a `\x` escape code:
 
 ```python
 s = '\x63\x6f\x77'
+def helloWorld():
+  pass
 ```
 
 To get this representation of a string that's already in memory, use `repr`. It
