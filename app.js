@@ -1,6 +1,7 @@
 var dotenv = require('dotenv');
 dotenv.load();
 var port = 3001;
+var configOptions = {};
 
 var colors = require('colors');
 var compression = require('compression');
@@ -21,8 +22,9 @@ app.use("/doc", express.static(__dirname+'/client/doc'));
 app.use(bodyParser.json({extended:true}));
 app.use(bodyParser.urlencoded({extended:true}));
 
+// Markdown compilation with sytax highlighting
 marked.setOptions({
-  gfm: true,
+  gfm: true, // by default allow Github-flavored markdown
   tables: true,
   highlight: function (code, lang, callback) {
     require('pygmentize-bundled')({ lang: lang, format: 'html' }, code, function (err, result) {
@@ -96,9 +98,11 @@ app.get('/', function (req, res) {
           for (var j = 0; j < r.length; j++) {
             r[j] = r[j].split("/")[r[j].split("/").length-1];
             var slug = r[j].substr(11, r[j].length-14);
-            var time = moment(r[j].substr(0, 10), ["YYYY-MM-DD"]).format("LL");
+            var time = moment(r[j].substr(0, 10), [configOptions.dateFormat]).format("LL");
             var k = slug + ".md";
-            htmlData.unshift('<div class="story"><a href="/'+slug+'">'+ref[k].title+'</a><span class="date">'+time+'</span><span class="description">'+ref[k].summary+'</span></div>');
+            var listTemplate = configOptions.listTemplate;
+            listTemplate = listTemplate.replace(/{POST-SLUG}/g, slug).replace(/{POST-TITLE}/g, ref[k].title).replace(/{POST-TIME}/g, time).replace(/{POST-DESCRIPTION}/g, ref[k].summary);
+            htmlData.unshift(listTemplate);
           }
 
           var name = "Blog Name";
@@ -130,7 +134,7 @@ app.get('/:uid', function (req, res) {
           }
         }
         var md = ix !== -1 ? results[ix] : "404.md";
-        var time = md !== "404.md" ? moment(md.substr(0, 10), ["YYYY-MM-DD"]).format("LL") : "Invalid Page";
+        var time = md !== "404.md" ? moment(md.substr(0, 10), [configOptions.dateFormat]).format("LL") : "Invalid Page";
 
         fs.readFile(__dirname + "/_posts/" + md, 'utf-8', function (error, markdown) {
             var metaDataStart = markdown.indexOf("---START_METADATA---");
@@ -151,6 +155,8 @@ app.get('/:uid', function (req, res) {
               fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
               fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
               fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
+              fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
+              fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
               res.send(fileData);
             });
         });
@@ -164,5 +170,8 @@ app.get('/:uid', function (req, res) {
 
 app.listen(port, function () {
   refJSON();
+  fs.readFile(__dirname + "/config.json", "utf-8", function (e, d) {
+    configOptions = JSON.parse(d);
+  });
   console.log(('Blog server running at localhost:'+port).blue);
 });
