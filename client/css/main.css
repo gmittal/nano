@@ -474,7 +474,7 @@ img {
   }
 
   #header {
-    margin-bottom: -20px;
+    margin-bottom: -40px;
   }
 
   .bannerAd {
@@ -483,6 +483,18 @@ img {
 
   #mainTitle {
     font-size: 32pt;
+  }
+
+  .mainIntro .date {
+    font-size: 11pt;
+  }
+
+  #headline {
+    font-size: 19pt;
+  }
+
+  pre {
+    font-size: 11pt;
   }
 }
 
