@@ -25,15 +25,16 @@
 
         <div id="header">
           <div class="row">
-            <div class="whole">
+            <div class="two columns"></div>
+            <div class="eight columns">
               <div id="mainTitle">{BLOG-NAME}</div>
               <div id="mainDescription">{BLOG-DESCRIPTION}</div>
             </div>
+            <div class="two columns"></div>
           </div>
         </div>
         <div class="content row">
-          <div class="two columns">
-          </div>
+          <div class="two columns"></div>
           <div class="eight columns">
             <div class="mainIntro">
               <div id="headline">
@@ -58,7 +59,7 @@
                 (function() {  // DON'T EDIT BELOW THIS LINE
                     var d = document, s = d.createElement('script');
 
-                    s.src = '//YOUROWN.disqus.com/embed.js';
+                    s.src = '//{DISQUS-LINK}/embed.js';
 
                     s.setAttribute('data-timestamp', +new Date());
                     (d.head || d.body).appendChild(s);
@@ -67,8 +68,7 @@
             <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
             </div>
           </div>
-          <div class="two columns">
-          </div>
+          <div class="two columns"></div>
         </div>
 
 

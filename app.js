@@ -108,6 +108,8 @@ app.get('/', function (req, res) {
           var name = "Blog Name";
           fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
           fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
+          fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
+          fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
           res.send(fileData);
         });
       }

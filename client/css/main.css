@@ -99,6 +99,7 @@ a:hover {
   font-family: "Proxima Nova";
   font-weight: 700;
   color:#333;
+  line-height: 110%;
   text-align:center;
   font-size: 35pt;
   margin-top: 0px;
@@ -107,6 +108,8 @@ a:hover {
   -moz-user-select: none;     /* Firefox all */
   -ms-user-select: none;      /* IE 10+ */
   user-select: none;
+  /*margin-left: 15px;*/
+  /*margin-right: 15px;*/
 
 }
 
@@ -116,6 +119,9 @@ a:hover {
   color: #333;
   text-align: center;
   font-size: 12pt;
+  margin-top: 10px;
+  /*margin-left: 15px;*/
+  /*margin-right: 15px;*/
 }
 
 #mainTitle:hover {
