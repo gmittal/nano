@@ -9,6 +9,10 @@
   ]
 }
 ---END_METADATA---
+Here's an image! It's a very nice looking image.
+
+![image](img/anime.png)
+
 Hi, I'm Feross and I'm running for the [Node Foundation Board of Directors](https://nodejs.org/en/blog/community/individual-membership/).
 
 Why I'm a good fit:
