@@ -159,6 +159,7 @@ app.get('/:uid', function (req, res) {
               fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
               fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
               fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
+              fileData = fileData.replace(/{DISQUS-LINK}/g, configOptions.disqusCommentLink);
               res.send(fileData);
             });
         });
