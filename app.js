@@ -1,5 +1,3 @@
-var dotenv = require('dotenv');
-dotenv.load();
 var port = 3001;
 var configOptions = {};
 
