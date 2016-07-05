@@ -21,7 +21,10 @@ Clone the repository.
 ```shell
 $ git clone https://github.com/gmittal/nanoblog
 ```
-
+Install the dependencies.
+```shell
+$ npm install
+```
 Populate ```config.json``` with your information.
 ```javascript
 {
