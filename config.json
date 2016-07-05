@@ -1,7 +1,7 @@
 {
   "name": "Awesome Blog",
-  "description": "Not your average (Jekyll) blog. Written using the real dev language.",
+  "description": "Not your average blog. Here is an awesome description.",
   "dateFormat": "YYYY-MM-DD",
   "listTemplate": "<div class=\"story\"><a href=\"/{POST-SLUG}\">{POST-TITLE}</a><span class=\"date\">{POST-TIME}. {POST-DESCRIPTION}</span></div>",
-  "disqusCommentLink": "yourown.disqus.com"
+  "disqusCommentLink": "YOUROWN.disqus.com"
 }
