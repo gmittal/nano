@@ -8,12 +8,12 @@ Super simple blogging setup.
 - Easy to customize and hack
 
 ### BYOB (Build Your Own Blog)
-1. Clone the repo.
+Clone the repository.
 ```shell
 $ git clone https://github.com/gmittal/nanoblog
 ```
 
-2. Populate ```config.json``` with your information.
+Populate ```config.json``` with your information.
 ```javascript
 {
     "name": "Awesome Blog",
@@ -24,7 +24,7 @@ $ git clone https://github.com/gmittal/nanoblog
 }
 ```
 
-3. Write some markdown with ```{config.dateFormat}-post-name.md``` file name format. Put it in the ```_posts``` directory. Add post metadata to the beginning of each post like so:
+Write some markdown with ```{config.dateFormat}-post-name.md``` file name format. Put it in the ```_posts``` directory. Add post metadata to the beginning of each post like so:
 ```
 ---START_METADATA---
 {
@@ -40,12 +40,12 @@ $ git clone https://github.com/gmittal/nanoblog
 WRITE YOUR MARKDOWN POST CONTENT HERE
 ```
 
-4. Serve the blog.
+Serve the blog.
 ```
 $ node app.js
 ```
 
-5. _Customize!_ Hack the frontend the way you want it in ```client``` directory, or change ```app.js``` to match your needs.
+_Customize!_ Hack the frontend the way you want it in ```client``` directory, or change ```app.js``` to match your needs.
 
 ### License
 The MIT License ([MIT](https://tldrlegal.com/license/mit-license))
