@@ -103,9 +103,7 @@ app.get('/', function (req, res) {
             htmlData.unshift(listTemplate);
           }
 
-          var name = "Blog Name";
-          fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
-          fileData = fileData.replace(/{CLASS-STORY-SECTION}/g, htmlData.join(""));
+          fileData = fileData.replace(/{BLOG-POST-LIST}/g, htmlData.join(""));
           fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
           fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
           res.send(fileData);
@@ -150,11 +148,10 @@ app.get('/:uid', function (req, res) {
               var timeToRead = Math.ceil(wordCount / 200);
               var title = metadata.title;
               var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
-              var name = "Blog Name";
-              fileData = fileData.replace(/{AUTHOR-NAME}/g, name);
-              fileData = fileData.replace(/{ARTICLE-TITLE}/g, title);
-              fileData = fileData.replace(/{ARTICLE-DATE}/g, date);
-              fileData = fileData.replace(/{ARTICLE-CONTENT}/g, content);
+
+              fileData = fileData.replace(/{POST-TITLE}/g, title);
+              fileData = fileData.replace(/{POST-DATE}/g, date);
+              fileData = fileData.replace(/{POST-CONTENT}/g, content);
               fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
               fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
               fileData = fileData.replace(/{DISQUS-LINK}/g, configOptions.disqusCommentLink);
