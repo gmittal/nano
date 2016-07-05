@@ -63,7 +63,6 @@ var walk = function(dir, done) {
 function refJSON() {
     walk(__dirname+"/_posts", function (e, r) {
       var j = {};
-      r.splice(r.length-1, 1); // remove 404.md (hope that know one will be still using this in the year 4000)
       for (var i = 0; i < r.length; i++) {
         var d = fs.readFileSync(r[i], "utf-8");
         var metaDataStart = d.indexOf("---START_METADATA---");
@@ -81,7 +80,6 @@ function refJSON() {
 app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   walk(__dirname + "/_posts", function (e, r) {
-    r.splice(r.length-1, 1); // remove 404.md
     // retrieve the template
     fs.readFile(__dirname+"/client/index.html", 'utf-8', function (err, fileData) {
       if (err) {
@@ -131,35 +129,39 @@ app.get('/:uid', function (req, res) {
             break;
           }
         }
-        var md = ix !== -1 ? results[ix] : "404.md";
-        var time = md !== "404.md" ? moment(md.substr(0, 10), [configOptions.dateFormat]).format("LL") : "Invalid Page";
+        var md = ix !== -1 ? results[ix] : "404";
+        var time = md !== "404" ? moment(md.substr(0, 10), [configOptions.dateFormat]).format("LL") : "Invalid Page";
 
-        fs.readFile(__dirname + "/_posts/" + md, 'utf-8', function (error, markdown) {
-            var metaDataStart = markdown.indexOf("---START_METADATA---");
-            var metaDataEnd = markdown.indexOf("---END_METADATA---");
-            var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
-            var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
-            var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
-            markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
-            marked(markdown, function (err, content) {
-              if (err) throw err;
+        if (md !== "404") {
+          fs.readFile(__dirname + "/_posts/" + md, 'utf-8', function (error, markdown) {
+              var metaDataStart = markdown.indexOf("---START_METADATA---");
+              var metaDataEnd = markdown.indexOf("---END_METADATA---");
+              var jstart = markdown.substr(metaDataStart, metaDataEnd).indexOf("{");
+              var metadataStr = markdown.substr(jstart, metaDataEnd-jstart);
+              var metadata = JSON.parse(metadataStr); // object of metadata parsed out of markdown file
+              markdown = markdown.substr(metaDataEnd+"---END_METADATA---".length, markdown.length); // everything after the metadata
+              marked(markdown, function (err, content) {
+                if (err) throw err;
 
-              var wordCount = content.split(" ").length;
-              var timeToRead = Math.ceil(wordCount / 200);
-              var title = metadata.title;
-              var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
+                var wordCount = content.split(" ").length;
+                var timeToRead = Math.ceil(wordCount / 200);
+                var title = metadata.title;
+                var date = 'By <a href="/">'+metadata.author + '</a> &#183; ' + time + ' &#183; ' + timeToRead + " min read";
 
-              fileData = fileData.replace(/{POST-TITLE}/g, title);
-              fileData = fileData.replace(/{POST-DATE}/g, date);
-              fileData = fileData.replace(/{POST-CONTENT}/g, content);
-              fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
-              fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
-              fileData = fileData.replace(/{DISQUS-LINK}/g, configOptions.disqusCommentLink);
-              res.send(fileData);
-            });
-        });
-
+                fileData = fileData.replace(/{POST-TITLE}/g, title);
+                fileData = fileData.replace(/{POST-DATE}/g, date);
+                fileData = fileData.replace(/{POST-CONTENT}/g, content);
+                fileData = fileData.replace(/{BLOG-NAME}/g, configOptions.name);
+                fileData = fileData.replace(/{BLOG-DESCRIPTION}/g, configOptions.description);
+                fileData = fileData.replace(/{DISQUS-LINK}/g, configOptions.disqusCommentLink);
+                res.send(fileData);
+              });
+          });
+        } else {
+          res.sendFile(__dirname + "/client/404.html");
+        }
       });
+
 
     }
   });
