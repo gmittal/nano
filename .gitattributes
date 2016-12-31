@@ -1,2 +1,1 @@
-* text=auto
-.htaccess linguist-vendored=false
+client/.htaccess linguist-vendored=false
