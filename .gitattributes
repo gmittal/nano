@@ -1,1 +1,1 @@
-client/.htaccess linguist-vendored=false
+*.json linguist-language=javascript
